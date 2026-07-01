@@ -1,5 +1,7 @@
 const User = require("../models/UserModel");
 const bcrypt = require('bcrypt');
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 const loginpage = async (req, res) => {
     try {
@@ -14,17 +16,23 @@ const loginpage = async (req, res) => {
             return res.status(400).json({ message: "User doesn't exists" });
         }
 
-        const hashedPassword = await bcrypt.compare(password, checkExistingUser.password);
-        if (!hashedPassword) {
+        const isPasswordCorrect = await bcrypt.compare(password, checkExistingUser.password);
+        if (!isPasswordCorrect) {
             return res.status(400).json({ message: "Incorrect password" });
         }
+
+        const token = jwt.sign({
+            id: checkExistingUser._id,
+            email: checkExistingUser.email,
+            role: checkExistingUser.role,
+        }, process.env.JWT_SECRET, { expiresIn: '24h' });
 
         res.status(200).json({
             message: "Login done!!!",
             user: checkExistingUser.name,
-            email: checkExistingUser.email
+            email: checkExistingUser.email,
+            jwt: token
         })
-
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Internal server error" });

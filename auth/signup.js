@@ -1,22 +1,21 @@
-import User from "../models/UserModel"
+const User = require("../models/UserModel");
 const bcrypt = require('bcrypt');
 
 const signuppage = async (req, res) => {
     try {
         const { name, email, password } = req.body;
         if (!name || !email || !password) {
-            console.log("Fill all the details");
+            return res.status(400).json({ message: "All details required" });
         }
 
         const normalizedEmail = email.toLowerCase();
-        const checkExistingUser = User.findOne(normalizedEmail);
+        const checkExistingUser = await User.findOne({ email: normalizedEmail });
         if (checkExistingUser) {
             return res.status(400).json({ message: "User already exists" });
         }
 
-        const hashedPassword = bcrypt.hash(password, 21);
-        const newUser = User.create({ name, email: normalizedEmail, password: hashedPassword });
-        newUser.save();
+        const hashedPassword = await bcrypt.hash(password, 21);
+        const newUser = await User.create({ name, email: normalizedEmail, password: hashedPassword });
 
         res.status(201).json({
             message: "User created successfully!!!",
@@ -24,11 +23,10 @@ const signuppage = async (req, res) => {
             email: newUser.email
         })
 
-    } catch (err) {
+    } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Internal server error" });
     }
 }
 
-const Signup = mongoose.model("Signup", signuppage);
-module.exports = Signup;
+module.exports = signuppage;

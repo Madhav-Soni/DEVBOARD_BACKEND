@@ -6,9 +6,10 @@ const taskSchema = new mongoose.Schema(
         description: String,
         status: String,
         priority: String,
+        assignee:String,
         dueDate: Date,
+        label:String,
         projectId: String,
-        owner: String,
         createdAt: Date
     }
 );

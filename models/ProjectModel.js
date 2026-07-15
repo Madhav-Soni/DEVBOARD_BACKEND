@@ -2,10 +2,15 @@ const mongoose = require('mongoose');
 
 const projectSchema = new mongoose.Schema(
     {
-        name: String,
-        description: String,
-        owner: String,
-        CreatedAt: Date
+
+        name:String,
+        description:String,
+        color:color,
+        owner:String,
+        workspace:String,
+        members:String,
+        createdAt:Date,
+        updatedAt:Date
     }
 );
 
